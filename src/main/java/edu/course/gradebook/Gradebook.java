@@ -42,7 +42,7 @@ public class Gradebook {
     public Optional<Double> averageFor(String name) {
         if(gradesByStudent.containsKey(name)) {
             var grades = gradesByStudent.get(name);
-            var average = 0.0;
+            double average = 0.0;
             for(int g: grades){
                 average += g;
             }
@@ -55,7 +55,7 @@ public class Gradebook {
     public Optional<String> letterGradeFor(String name) {
         if(gradesByStudent.containsKey(name)&&!gradesByStudent.get(name).isEmpty()){
             var average = averageFor(name);
-            var letterGrade = "";
+            String letterGrade = "";
             if(average.get()>89){
                 letterGrade = "A";
             }else if(average.get()>79){
@@ -75,7 +75,7 @@ public class Gradebook {
     public Optional<Double> classAverage() {
         if(gradesByStudent.isEmpty()) return Optional.empty();
         var students = gradesByStudent.keySet().iterator();
-        var average = 0.0;
+        double average = 0.0;
         while(students.hasNext()){
             var current = students.next();
             if(averageFor(current).isPresent()){
@@ -87,7 +87,9 @@ public class Gradebook {
     }
 
     public boolean undo() {
-        throw new UnsupportedOperationException();
+        if(undoStack.isEmpty()) return false;
+        undoStack.pop();
+        return true;
     }
 
     public List<String> recentLog(int maxItems) {
