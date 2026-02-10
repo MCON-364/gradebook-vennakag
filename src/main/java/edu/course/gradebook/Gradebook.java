@@ -17,6 +17,7 @@ public class Gradebook {
         if(!gradesByStudent.containsKey(name)) {
             gradesByStudent.put(name, new ArrayList<>());
             added = true;
+            activityLog.add("Added student " + name);
         }
         return added;
     }
@@ -26,6 +27,7 @@ public class Gradebook {
         if(gradesByStudent.containsKey(name)) {
             gradesByStudent.get(name).add(grade);
             added = true;
+            activityLog.add("Added grade " + grade + "for student " + name);
         }
         return added;
     }
@@ -35,6 +37,7 @@ public class Gradebook {
         if(gradesByStudent.containsKey(name)) {
             gradesByStudent.get(name).remove(0);
             removed = true;
+            activityLog.add("Removed student " + name);
         }
         return removed;
     }
@@ -47,6 +50,7 @@ public class Gradebook {
                 average += g;
             }
             average = average/grades.size();
+            activityLog.add("Retrieved average for student " + name);
             return Optional.of(average);
         }
         return Optional.empty();
@@ -67,6 +71,7 @@ public class Gradebook {
             }else{
                 letterGrade = "F";
             }
+            activityLog.add("Retrieved letter grade for student " + name);
             return Optional.of(letterGrade);
         }
         return Optional.empty();
@@ -83,6 +88,7 @@ public class Gradebook {
             }
         }
         average = average / gradesByStudent.size();
+        activityLog.add("Retrieved average for class average");
         return Optional.of(average);
     }
 
@@ -93,6 +99,18 @@ public class Gradebook {
     }
 
     public List<String> recentLog(int maxItems) {
-        throw new UnsupportedOperationException();
+        if(activityLog.isEmpty()) return new LinkedList<>();
+        List<String> logs = new LinkedList<>();
+        if(activityLog.size() >= maxItems) {
+            for (int i = maxItems; i > -1; i--) {
+                logs.add(activityLog.poll());
+            }
+        }else{
+            System.out.println("There are only" + activityLog.size() + " items in log");
+            for(int i = activityLog.size()-1; i > -1; i--) {
+                logs.add(activityLog.poll());
+            }
+        }
+        return logs;
     }
 }
