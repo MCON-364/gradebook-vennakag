@@ -82,4 +82,9 @@ public class GradebookTest {
         assertEquals("B",  gradebook.letterGradeFor("Sarah").get());
     }
 
+    @Test
+    void testLogs(){
+        
+    }
+
 }

@@ -123,8 +123,8 @@ public class Gradebook {
         if(activityLog.isEmpty()) return new LinkedList<>();
         List<String> logs = new LinkedList<>();
         int items = Math.min(maxItems, activityLog.size());
-        for(int i = activityLog.size()-1; i > activityLog.size() - items; i--) {
-            logs.add(activityLog.get(i));
+        for (int i = 0; i < items; i++) {
+            logs.add(activityLog.get(activityLog.size() - 1 - i));
         }
         return logs;
     }
