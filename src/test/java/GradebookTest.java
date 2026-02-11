@@ -84,7 +84,7 @@ public class GradebookTest {
 
     @Test
     void testLogs(){
-        
+        assertEquals("Added student Sarah", gradebook.recentLog(6).get(0));
     }
 
 }
