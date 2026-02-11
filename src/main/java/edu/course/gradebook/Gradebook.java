@@ -28,6 +28,12 @@ public class Gradebook {
             gradesByStudent.get(name).add(grade);
             added = true;
             activityLog.add("Added grade " + grade + "for student " + name);
+            undoStack.push(new UndoAction() {
+                @Override
+                public void undo(Gradebook gradebook) {
+                    gradesByStudent.get(name).remove(grade);
+                }
+            });
         }
         return added;
     }
@@ -35,9 +41,16 @@ public class Gradebook {
     public boolean removeStudent(String name) {
         boolean removed = false;
         if(gradesByStudent.containsKey(name)) {
-            gradesByStudent.get(name).remove(0);
+            List<Integer> grades = gradesByStudent.get(name);
+            gradesByStudent.remove(name);
             removed = true;
             activityLog.add("Removed student " + name);
+            undoStack.push(new UndoAction() {
+                @Override
+                public void undo(Gradebook gradebook) {
+                    gradesByStudent.put(name, grades);
+                }
+            });
         }
         return removed;
     }
@@ -59,18 +72,13 @@ public class Gradebook {
     public Optional<String> letterGradeFor(String name) {
         if(gradesByStudent.containsKey(name)&&!gradesByStudent.get(name).isEmpty()){
             var average = averageFor(name);
-            String letterGrade = "";
-            if(average.get()>89){
-                letterGrade = "A";
-            }else if(average.get()>79){
-                letterGrade = "B";
-            }else if(average.get()>69){
-                letterGrade = "C";
-            }else if(average.get()>59){
-                letterGrade = "D";
-            }else{
-                letterGrade = "F";
-            }
+            String letterGrade = switch ((int) (average.get() / 10)) {
+                case 10, 9 -> "A";
+                case 8 -> "B";
+                case 7 -> "C";
+                case 6 -> "D";
+                default -> "F";
+            };
             activityLog.add("Retrieved letter grade for student " + name);
             return Optional.of(letterGrade);
         }
@@ -94,7 +102,8 @@ public class Gradebook {
 
     public boolean undo() {
         if(undoStack.isEmpty()) return false;
-        undoStack.pop();
+        UndoAction curr = undoStack.pop();
+        curr.undo(this);
         return true;
     }
 
@@ -103,12 +112,12 @@ public class Gradebook {
         List<String> logs = new LinkedList<>();
         if(activityLog.size() >= maxItems) {
             for (int i = maxItems; i > -1; i--) {
-                logs.add(activityLog.poll());
+                logs.add(activityLog.peek());
             }
         }else{
             System.out.println("There are only" + activityLog.size() + " items in log");
             for(int i = activityLog.size()-1; i > -1; i--) {
-                logs.add(activityLog.poll());
+                logs.add(activityLog.peek());
             }
         }
         return logs;

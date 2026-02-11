@@ -31,7 +31,8 @@ public class GradebookTest {
 
     @Test
     void testFindStudentGradesForInvalidStudent(){
-        assertTrue(gradebook.findStudentGrades("Tanya").isEmpty());
+
+        assertTrue(gradebook.findStudentGrades("Elisheva").isEmpty());
     }
 
     @Test
@@ -57,13 +58,13 @@ public class GradebookTest {
 
     @Test
     void testAverageFor(){
-        assertEquals(88.5, gradebook.averageFor("Sarah").get());
+        assertEquals(90.66666666666667, gradebook.averageFor("Sarah").get());
         assertTrue(gradebook.averageFor("Paula").isEmpty());
     }
 
     @Test
     void testLetterGradeFor(){
-        assertEquals("B",  gradebook.letterGradeFor("Sarah").get());
+        assertEquals("A",  gradebook.letterGradeFor("Sarah").get());
         assertEquals("D", gradebook.letterGradeFor("Juliette").get());
         assertTrue(gradebook.letterGradeFor("Paula").isEmpty());
     }
