@@ -1,5 +1,6 @@
 import edu.course.gradebook.Gradebook;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -8,8 +9,8 @@ public class GradebookTest {
 
     static Gradebook gradebook;
 
-    @BeforeAll
-    static void setup(){
+    @BeforeEach
+    void setup(){
         gradebook = new Gradebook();
         gradebook.addStudent("Sarah");
         gradebook.addStudent("Devorah");
@@ -58,13 +59,13 @@ public class GradebookTest {
 
     @Test
     void testAverageFor(){
-        assertEquals(90.66666666666667, gradebook.averageFor("Sarah").get());
+        assertEquals(88.5, gradebook.averageFor("Sarah").get());
         assertTrue(gradebook.averageFor("Paula").isEmpty());
     }
 
     @Test
     void testLetterGradeFor(){
-        assertEquals("A",  gradebook.letterGradeFor("Sarah").get());
+        assertEquals("B",  gradebook.letterGradeFor("Sarah").get());
         assertEquals("D", gradebook.letterGradeFor("Juliette").get());
         assertTrue(gradebook.letterGradeFor("Paula").isEmpty());
     }
@@ -74,5 +75,11 @@ public class GradebookTest {
         assertEquals(79.5, gradebook.classAverage().get());
     }
 
+    @Test
+    void testUndo(){
+        gradebook.addGrade("Sarah", 70);
+        gradebook.undo();
+        assertEquals("B",  gradebook.letterGradeFor("Sarah").get());
+    }
 
 }

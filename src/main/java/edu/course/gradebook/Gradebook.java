@@ -27,12 +27,15 @@ public class Gradebook {
         if(gradesByStudent.containsKey(name)) {
             gradesByStudent.get(name).add(grade);
             added = true;
-            activityLog.add("Added grade " + grade + "for student " + name);
+            activityLog.add("Added grade " + grade + " for student " + name);
             undoStack.push(new UndoAction() {
                 @Override
                 public void undo(Gradebook gradebook) {
-                    gradesByStudent.get(name).remove(grade);
-                    activityLog.add("Undo add grade " + grade + "for student " + name);
+                    var grades = gradesByStudent.get(name);
+                    if (grades != null && !grades.isEmpty()) {
+                        grades.remove(grades.size() - 1); // remove last added grade
+                    }
+                    activityLog.add("Undo add grade " + grade + " for student " + name);
                 }
             });
         }
@@ -97,11 +100,13 @@ public class Gradebook {
         int gradeCount = 0;
         while(students.hasNext()){
             var current = students.next();
-            if(averageFor(current).isPresent()){
-                average += averageFor(current).get();
+            var grades = gradesByStudent.get(current);
+            for(var grade : grades){
+                average += grade;
                 gradeCount++;
             }
         }
+        if (gradeCount == 0) return Optional.empty();
         average = average / gradeCount;
         activityLog.add("Retrieved average for class average");
         return Optional.of(average);
@@ -117,15 +122,9 @@ public class Gradebook {
     public List<String> recentLog(int maxItems) {
         if(activityLog.isEmpty()) return new LinkedList<>();
         List<String> logs = new LinkedList<>();
-        if(activityLog.size() >= maxItems) {
-            for (int i = maxItems; i > -1; i--) {
-                logs.add(activityLog.peek());
-            }
-        }else{
-            System.out.println("There are only" + activityLog.size() + " items in log");
-            for(int i = activityLog.size()-1; i > -1; i--) {
-                logs.add(activityLog.peek());
-            }
+        int items = Math.min(maxItems, activityLog.size());
+        for(int i = activityLog.size()-1; i > activityLog.size() - items; i--) {
+            logs.add(activityLog.get(i));
         }
         return logs;
     }
