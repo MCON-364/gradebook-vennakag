@@ -17,7 +17,7 @@ public class Gradebook {
         if(!gradesByStudent.containsKey(name)) {
             gradesByStudent.put(name, new ArrayList<>());
             added = true;
-            activityLog.add("Added student " + name);
+            activityLog.push("Added student " + name);
         }
         return added;
     }
@@ -27,7 +27,7 @@ public class Gradebook {
         if(gradesByStudent.containsKey(name)) {
             gradesByStudent.get(name).add(grade);
             added = true;
-            activityLog.add("Added grade " + grade + " for student " + name);
+            activityLog.push("Added grade " + grade + " for student " + name);
             undoStack.push(new UndoAction() {
                 @Override
                 public void undo(Gradebook gradebook) {
@@ -35,7 +35,7 @@ public class Gradebook {
                     if (grades != null && !grades.isEmpty()) {
                         grades.remove(grades.size() - 1); // remove last added grade
                     }
-                    activityLog.add("Undo add grade " + grade + " for student " + name);
+                    activityLog.push("Undo add grade " + grade + " for student " + name);
                 }
             });
         }
@@ -48,12 +48,12 @@ public class Gradebook {
             List<Integer> grades = gradesByStudent.get(name);
             gradesByStudent.remove(name);
             removed = true;
-            activityLog.add("Removed student " + name);
+            activityLog.push("Removed student " + name);
             undoStack.push(new UndoAction() {
                 @Override
                 public void undo(Gradebook gradebook) {
                     gradesByStudent.put(name, grades);
-                    activityLog.add("Undo remove student " + name);
+                    activityLog.push("Undo remove student " + name);
                 }
             });
         }
@@ -71,7 +71,7 @@ public class Gradebook {
                 average += g;
             }
             average = average/grades.size();
-            activityLog.add("Retrieved average for student " + name);
+            activityLog.push("Retrieved average for student " + name);
             return Optional.of(average);
         }
         return Optional.empty();
@@ -87,7 +87,7 @@ public class Gradebook {
                 case 6 -> "D";
                 default -> "F";
             };
-            activityLog.add("Retrieved letter grade for student " + name);
+            activityLog.push("Retrieved letter grade for student " + name);
             return Optional.of(letterGrade);
         }
         return Optional.empty();
@@ -108,7 +108,7 @@ public class Gradebook {
         }
         if (gradeCount == 0) return Optional.empty();
         average = average / gradeCount;
-        activityLog.add("Retrieved average for class average");
+        activityLog.push("Retrieved average for class average");
         return Optional.of(average);
     }
 
