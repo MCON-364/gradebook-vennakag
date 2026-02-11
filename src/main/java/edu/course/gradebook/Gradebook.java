@@ -32,6 +32,7 @@ public class Gradebook {
                 @Override
                 public void undo(Gradebook gradebook) {
                     gradesByStudent.get(name).remove(grade);
+                    activityLog.add("Undo add grade " + grade + "for student " + name);
                 }
             });
         }
@@ -49,6 +50,7 @@ public class Gradebook {
                 @Override
                 public void undo(Gradebook gradebook) {
                     gradesByStudent.put(name, grades);
+                    activityLog.add("Undo remove student " + name);
                 }
             });
         }
@@ -57,6 +59,9 @@ public class Gradebook {
 
     public Optional<Double> averageFor(String name) {
         if(gradesByStudent.containsKey(name)) {
+            if(gradesByStudent.get(name).isEmpty()) {
+                return Optional.empty();
+            }
             var grades = gradesByStudent.get(name);
             double average = 0.0;
             for(int g: grades){
@@ -89,13 +94,15 @@ public class Gradebook {
         if(gradesByStudent.isEmpty()) return Optional.empty();
         var students = gradesByStudent.keySet().iterator();
         double average = 0.0;
+        int gradeCount = 0;
         while(students.hasNext()){
             var current = students.next();
             if(averageFor(current).isPresent()){
                 average += averageFor(current).get();
+                gradeCount++;
             }
         }
-        average = average / gradesByStudent.size();
+        average = average / gradeCount;
         activityLog.add("Retrieved average for class average");
         return Optional.of(average);
     }
